@@ -7,7 +7,71 @@
 // @grant       none
 // @author      twitch.tv/apostolique
 // ==/UserScript==
+//Server Selection
+var modBlocking = true;
+var nodeDiv = document.createElement("div");
+nodeDiv.id = "includedContent";
+nodeDiv.style.backgroundColor = "#000000";
+nodeDiv.style.zIndex = 9999999999;
+nodeDiv.style.color = "#dddddd";
+nodeDiv.innerHTML = "<small>Asexual</small>";
+nodeDiv.innerHTML+= "<p>hacked interface for team play</p>";
+jQuery('#region').parent().get(0).appendChild( document.createElement("br"));
+jQuery('#region').parent().get(0).appendChild(nodeDiv);
 
+var selector = jQuery('#region');
+var playBtn = jQuery('#playBtn');
+var nodeInput = document.createElement("input");
+var nodeBr = document.createElement("br");
+nodeInput.className = "form-control";
+nodeInput.id = "iphack";
+jQuery( playBtn ).parent().get( 0 ).appendChild(nodeBr);
+jQuery( playBtn ).parent().get( 0 ).appendChild(nodeInput);
+
+jQuery('#iphack').change(function () {
+modBlocking = false;
+});
+
+jQuery('#playBtn').off();
+$('.btn-needs-server').prop('disabled', false);
+jQuery('#playBtn').click(function() {
+	if (modBlocking == false ) {
+		jQuery('#region').val("SG-Singapore");
+		jQuery('#region').change();
+	}
+    setNick(document.getElementById('nick').value);
+    return false;
+});
+jQuery('#region').off();
+jQuery('#region').change(function () {
+	jQuery.ajax("http://m.agar.io/", {
+            error: function() {
+            },
+            success: function(a) {
+                a = a.split("\n");
+                jQuery('#includedContent').html(a[0]);
+            },
+            dataType: "text",
+            method: "POST",
+            cache: !1,
+            crossDomain: !0,
+            data: jQuery('#region').val()
+        });
+});
+(function(window){
+    var WebSocket_original = window.WebSocket;
+    window.WebSocket_original = WebSocket_original;
+    window.WebSocket = function(data) {
+	if (modBlocking == true ) {
+		newWebSocket = new window.WebSocket_original(data);
+        	return newWebSocket;
+	}else {
+		console.log("HAXXED: connecting to "+jQuery('#iphack').val()   + "(ignoring: "+data+")");
+	}
+    };
+})(window);
+
+//start
 (function (g, q) {
     function wa() {
         ha();
@@ -53,6 +117,18 @@
                 console.log("ToggleDraw");
                 toggleDraw = !toggleDraw;
             }
+            //todo: fix scale
+            /*
+            if (e.keyCode == 71) {
+		            console.log("scale--");
+		             k = k * 0.9;
+	          }
+	          if (e.keyCode == 72) {
+		             console.log("scale++");
+		             k = k * 1.1;
+	          }
+            */
+
         };
         g.onkeyup = function (e) {
             32 == e.keyCode && (a = !1);
@@ -837,7 +913,7 @@
                     for (var j = 0; j < allThreatLines.length; j++) {
                         var badSideLeft = allThreatLinesmool[0];
                         var badSideRight = allThreatLinesmool[1];
-                        
+
                         if (allFallbackmool[i] &&
                             badSideLeft != isSideLine(allThreatLines[j][0][0], allThreatLines[j][0][1], allFallbackPoints[i]) &&
                             badSideRight != isSideLine(allThreatLines[j][1][0], allThreatLines[j][1][1], allFallbackPoints[i])
@@ -850,9 +926,9 @@
                             allFallbackCount[i] += 1;
                         }
                     }
-                    
+
                 }
-                
+
                 var closestFallback = null;
                 var fallbackDistance = null;
                 for (var i = 1; i < allFallbackPoints.length; i++) {
@@ -870,7 +946,7 @@
                         }
                     }
                 }
-                
+
                 if (closestFallback != null) {
                     console.log("ESCAPING");
                     tempMoveX = closestFallback[0];
@@ -997,22 +1073,22 @@
         p.sort(function (a, b) {
             return a.size == b.size ? a.id - b.id : a.size - b.size
         });
-        d.save();        
+        d.save();
         d.translate(l / 2, r / 2);
         d.scale(k, k);
-        d.translate(-s, -t);       
+        d.translate(-s, -t);
         for (e = 0; e < C.length; e++) C[e].draw();
         for (e = 0; e < p.length; e++) p[e].draw();
         d.strokeStyle = '#555555';
         d.lineWidth = 5;
         d.beginPath();
-        d.moveTo(0, 0); 
-        d.lineTo(mapSize, 0); 
-        d.lineTo(mapSize, mapSize); 
+        d.moveTo(0, 0);
+        d.lineTo(mapSize, 0);
+        d.lineTo(mapSize, mapSize);
         d.lineTo(0, mapSize);
-        d.lineTo(0, 0); 
+        d.lineTo(0, 0);
         d.stroke();
-        d.restore();        
+        d.restore();
         y && 0 != w.length && d.drawImage(y, l - y.width - 10, 10);
         M = Math.max(M, Ea());
         sessionScore = Math.max(sessionScore, M);
@@ -1076,7 +1152,7 @@
 
             d.moveTo(lines[i][0], lines[i][1]);
             d.lineTo(lines[i][2], lines[i][3]);
-        
+
         d.stroke();
     }
     d.lineWidth = 1;
