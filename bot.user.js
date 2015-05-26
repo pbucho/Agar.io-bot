@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        AgarBot
 // @namespace   Apos
-// @description Plays Agar
+// @description Plays Agar 
 // @include     http://agar.io/
 // @version     1
 // @grant       none
@@ -593,29 +593,35 @@
                     offsetEscapeRightX = offsetEscapeX + (allPossibleThreats[i].size / ratioLeftX * escapeMid);
                     offsetEscapeRightY = offsetEscapeY + (allPossibleThreats[i].size / ratioLeftY * escapeMid);
                 }
-                var PushEscapePoint = true;
-                //do not add to escape list if the escape point is the corner
-                if ((offsetEscapeLeftX <= 0 && offsetEscapeLeftY <= 0) ||  (offsetEscapeLeftX >= mapWidth && offsetEscapeLeftY >= mapHeight) || 
-                   (offsetEscapeLeftX == 0 && offsetEscapeLeftY >= mapHeight ) || (offsetEscapeLeftX >= mapWidth && offsetEscapeLeftY <= 0) || )
-                    {PushEscapePoint = false; }
-                    
-                //reset escape point to map if it is outside the map    
-                //also adds half of the size of YOU when the escape point is on the eage to have full speed                
-                else if (offsetEscapeLeftX < 0) { offsetEscapeLeftX = 0 + m[0].size /2; }
-                else if (offsetEscapeLeftY < 0) { offsetEscapeLeftY = 0 + m[0].size /2; }
-                else if (offsetEscapeLeftX > mapWidth -1) { offsetEscapeLeftX = mapWidth - m[0].size /2; }
-                else if (offsetEscapeLeftY > mapHeight -1) { offsetEscapeLeftY = mapHeight - m[0].size /2; }
-                else if (offsetEscapeRightX < 0) { offsetEscapeRightX = 0 + m[0].size /2; }
-                else if (offsetEscapeRightY < 0) { offsetEscapeRightY = 0 + m[0].size /2; }
-                else if (offsetEscapeRightX > mapWidth-1) { offsetEscapeRightX = mapSimapWidthze - m[0].size /2; }
-                else if (offsetEscapeRightY > mapHeight) { offsetEscapeRightY = mapHeight - size /2; }
-              
-                //do not add to escape list if the escape point is at your location
-                if (offsetEscapeLeftX == m[0].x && offsetEscapeLeftY == m[0].y){
-                  PushEscapePoint = false; 
-                }
-              
-                if ((m[0].x < allPossibleThreats[i].x || m[0].x > allPossibleThreats[i].x) && m[0].y > allPossibleThreats[i].y) {
+
+                if (offsetEscapeLeftX < 0) { offsetEscapeLeftX = 0 + m[0].size /2; }
+                if (offsetEscapeLeftY < 0) { offsetEscapeLeftY = 0 + m[0].size /2; }
+                if (offsetEscapeLeftX > mapSize) { offsetEscapeLeftX = mapSize - m[0].size /2; }
+                if (offsetEscapeLeftY > mapSize) { offsetEscapeLeftY = mapSize - m[0].size /2; }
+                if (offsetEscapeRightX < 0) { offsetEscapeRightX = 0 + m[0].size /2; }
+                if (offsetEscapeRightY < 0) { offsetEscapeRightY = 0 + m[0].size /2; }
+                if (offsetEscapeRightX > mapSize) { offsetEscapeRightX = mapSize - m[0].size /2; }
+                if (offsetEscapeRightY > mapSize) { offsetEscapeRightY = mapSize - m[0].size /2; }
+
+                if (m[0].x < allPossibleThreats[i].x && m[0].y > allPossibleThreats[i].y) {
+                    var c = offsetRightX;
+                    offsetRightX = offsetLeftX;
+                    offsetLeftX = c;
+
+                    var d = offsetRightY;
+                    offsetRightY = offsetLeftY;
+                    offsetLeftY = d;
+
+                    var e = offsetEscapeRightX;
+                    offsetEscapeRightX = offsetEscapeLeftX;
+                    offsetEscapeLeftX = e;
+
+                    var f = offsetEscapeRightY;
+                    offsetEscapeRightY = offsetEscapeLeftY;
+                    offsetEscapeLeftY = f;
+                    //console.log("Swap");
+                } else if (m[0].x > allPossibleThreats[i].x && m[0].y > allPossibleThreats[i].y)
+                {
                     var c = offsetRightX;
                     offsetRightX = offsetLeftX;
                     offsetLeftX = c;
@@ -657,19 +663,22 @@
                 drawLine(threatLineRight[0][0], threatLineRight[0][1], threatLineRight[1][0], threatLineRight[1][1], 0);
 
                 allThreatLines.push([threatLineLeft, threatLineRight]);
-                if(PushEscapePoint){
-                  drawPoint(offsetEscapeLeftX, offsetEscapeLeftY, 4);
-                  drawPoint(offsetEscapeRightX, offsetEscapeRightY, 4);
-                  allFallbackPointsLeft.push([offsetEscapeLeftX, offsetEscapeLeftY]);
-                  allFallbackPointsRight.push([offsetEscapeRightX, offsetEscapeRightY]);
-                  //allFallbackPoints.push([offsetEscapeRightX, offsetEscapeRightY]);
 
-                  allFallbackmool.push(true);
-                  //allFallbackmool.push(true);
+                drawPoint(offsetEscapeLeftX, offsetEscapeLeftY, 4);
+                drawPoint(offsetEscapeRightX, offsetEscapeRightY, 4);
+                //drawPoint(offsetEscapeX, offsetEscapeY, 4);
 
-                  allFallbackCount.push(0);
-                  //allFallbackCount.push(0);
-                }
+                //allFallbackPoints.push([offsetEscapeX, offsetEscapeY]);
+                allFallbackPointsLeft.push([offsetEscapeLeftX, offsetEscapeLeftY]);
+                allFallbackPointsRight.push([offsetEscapeRightX, offsetEscapeRightY]);
+                //allFallbackPoints.push([offsetEscapeRightX, offsetEscapeRightY]);
+
+                allFallbackmool.push(true);
+                //allFallbackmool.push(true);
+
+                allFallbackCount.push(0);
+                //allFallbackCount.push(0);
+
                 var badSide = isSideLine(threatLine[0], threatLine[1], [allPossibleThreats[i].x, allPossibleThreats[i].y]);
 
                 var badSideLeft = isSideLine(threatLineLeft[0], threatLineLeft[1], [allPossibleThreats[i].x, allPossibleThreats[i].y]);
@@ -768,7 +777,8 @@
                         splitted = true;
                     }
 
-                    if (biggestCluster[2] * 2.5 < m[0].size && biggestCluster[2] > m[0].size / 5 && biggestCluster[2] > 11 && !splitted && !splitting) {
+                  /*
+                   if (biggestCluster[2] * 2.5 < m[0].size && biggestCluster[2] > m[0].size / 5 && biggestCluster[2] > 11 && !splitted && !splitting) {
                         drawLine(m[0].x, m[0].y, biggestCluster[0], biggestCluster[1], 4);
 
                         var worthyTargetDistance = computeDistance(m[0].x, m[0].y, biggestCluster[0], biggestCluster[1]);
@@ -781,6 +791,7 @@
                             splitting = true;
                         }
                     }
+                    */
                 }
 
             } else if (!virusmait) {
@@ -840,7 +851,6 @@
                         }
                     }
                     
-
                 }
                 
                 var closestFallback = null;
@@ -997,9 +1007,9 @@
         d.lineWidth = 5;
         d.beginPath();
         d.moveTo(0, 0); 
-        d.lineTo(mapWidth, 0); 
-        d.lineTo(mapWidth, mapHight); 
-        d.lineTo(0, mapHight);
+        d.lineTo(mapSize, 0); 
+        d.lineTo(mapSize, mapSize); 
+        d.lineTo(0, mapSize);
         d.lineTo(0, 0); 
         d.stroke();
         d.restore();        
@@ -1014,7 +1024,9 @@
         1 < u && (u = 1)
 
         for (var i = 0; i < dPoints.length; i++) {
-            var radius = 10;            
+            var radius = 10;
+
+
             d.beginPath();
             d.arc(dPoints[i][0], dPoints[i][1], radius, 0, 2 * Math.PI, false);
 
@@ -1035,16 +1047,9 @@
             d.fill();
             d.lineWidth = 2;
             d.strokeStyle = '#003300';
-            d.stroke();           
-            d.font = '18px Arial';
-            d.fillStyle = '#333333';	         
-            var txt = "[" + String(Math.round(dPoints[i][0])) + ", " + String(Math.round(dPoints[i][1])) + "]";
-            d.strokeText(txt, dPoints[i][0] , dPoints[i][1]); 
-            d.fillText(txt, dPoints[i][0] , dPoints[i][1]); 
-            //d.strokeText(txt, dPoints[i][0] - d.measureText(txt).width / 2, dPoints[i][1] - 50); 
-            //d.fillText(txt, dPoints[i][0] - d.measureText(txt).width / 2, dPoints[i][1] - 50);  
+            d.stroke();
         }
-        d.lineWidth = 1;t
+        d.lineWidth = 1;
 
         for (var i = 0; i < lines.length; i++) {
             d.beginPath();
@@ -1071,18 +1076,15 @@
 
             d.moveTo(lines[i][0], lines[i][1]);
             d.lineTo(lines[i][2], lines[i][3]);
-
-            d.stroke();
-        }
-       
-        d.lineWidth = 1;
-
-
+        
+        d.stroke();
     }
-    function Fa() {
-        if (ia && fa.width) {
-            var a = l / 5;
-            d.drawImage(fa, 5, 5, a, a)
+    d.lineWidth = 1;
+  }
+  function Fa() {
+    if (ia && fa.width) {
+      var a = l / 5;
+      d.drawImage(fa, 5, 5, a, a)
         }
     }
     function Ea() {
@@ -1160,9 +1162,8 @@
         dPoints = [],
         lines = [],
         originalName,
-        sessionScore = 0,       
-        mapWidth = g.innerWidth;
-        mapHeight = g.innerHeight;
+        sessionScore = 0,
+        mapSize = 11180,
         d,
         z,
         l,
